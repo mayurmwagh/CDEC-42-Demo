@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-config 
+data:
+  dbpassword: "production"
+  dbusername: "demo"
+
+
+  --- 
+  

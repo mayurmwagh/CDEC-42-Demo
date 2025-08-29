@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: my-ss
+spec: 
+  selector:
+    matchLabels:
+      mylabelsname: my-ss
+  replicas: 4 
+  template:
+    metadata:
+      name: my-ss
+      labels:
+        mylabelsname: my-ss
+    spec:
+      containers:
+      - name: ss-container
+        image: richardchesterwood/k8s-fleetman-webapp-angular:release0-5
