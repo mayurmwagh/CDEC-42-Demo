@@ -522,3 +522,101 @@ spec:
             secretKeyRef:
               name: db-secret
               key: password
+
+
+## HPA
+
+
+AutoScaling in Kubernetes
+1. What is AutoScaling?
+
+AutoScaling in Kubernetes refers to the ability to automatically adjust resources (Pods, Nodes, or Clusters) based on load or usage metrics, ensuring optimal performance and resource utilization.
+
+2. Types of AutoScaling in Kubernetes
+a) Horizontal Pod Autoscaler (HPA)
+
+Scales pods horizontally (increases/decreases the number of replicas).
+
+Based on CPU, memory, or custom metrics (e.g., QPS).
+
+Example: If CPU > 80%, add more pod replicas.
+
+👉 Command:
+
+kubectl autoscale deployment <deployment-name> --cpu-percent=80 --min=2 --max=10
+
+b) Vertical Pod Autoscaler (VPA)
+
+Adjusts resources of pods vertically (changes CPU/memory requests and limits of containers).
+
+Useful for workloads with fluctuating resource needs.
+
+It can recommend, automatically apply, or just observe.
+
+👉 Modes:
+
+Off (just recommend),
+
+Auto (apply automatically),
+
+Initial (set only at pod creation).
+
+c) Cluster Autoscaler (CA)
+
+Scales the number of nodes in the cluster.
+
+Works with cloud providers like AWS (EKS), GCP (GKE), Azure (AKS).
+
+If pods are unscheduled due to insufficient resources → adds nodes.
+
+If nodes are underutilized → removes them.
+
+3. HPA Manifest Example
+
+Let’s create an HPA for a Deployment that scales between 2 and 10 replicas when average CPU usage is more than 50%.
+
+Deployment (example app)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          resources:                # required for HPA to monitor CPU
+            requests:
+              cpu: 100m
+            limits:
+              cpu: 200m
+
+Horizontal Pod Autoscaler (HPA)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx-hpa
+spec:
+  scaleTargetRef:              # Target: Deployment
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-deployment
+  minReplicas: 2               # Minimum replicas
+  maxReplicas: 10              # Maximum replicas
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu              # Scale based on CPU
+        target:
+          type: Utilization
+          averageUtilization: 50
