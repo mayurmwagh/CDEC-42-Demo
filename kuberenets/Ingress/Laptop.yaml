@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laptop-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: laptop-service
+  template:
+    metadata:
+      labels:
+        app: laptop-service 
+    spec:
+      containers:
+      - name: laptop-service
+        image: mayurwagh/laptop:latest
+        ports:
+        - containerPort: 80 
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: laptop-service
+spec:
+  selector:
+    app: laptop-service
+  ports:
+  - protocol: TCP
+    port: 80

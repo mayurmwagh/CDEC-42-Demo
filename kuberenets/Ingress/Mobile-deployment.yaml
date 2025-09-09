@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mobile-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mobile-service
+  template:
+    metadata:
+      labels:
+        app: mobile-service 
+    spec:
+      containers:
+      - name: mobile-service
+        image: mayurwagh/mobile:lastest
+        ports:
+        - containerPort: 80 
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mobile-service
+spec:
+  selector:
+    app: mobile-service
+  ports:
+  - protocol: TCP
+    port: 80
