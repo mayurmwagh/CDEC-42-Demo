@@ -620,3 +620,169 @@ spec:
         target:
           type: Utilization
           averageUtilization: 50
+
+
+
+1. Introduction to Ingress
+
+In Kubernetes, Ingress is an API object that manages external access to services in a cluster.
+
+It provides HTTP and HTTPS routing to services based on rules like hostnames or paths.
+
+Without Ingress, external access is typically managed using:
+
+NodePort
+
+LoadBalancer
+
+External IPs
+
+➡️ Ingress gives a centralized way to manage traffic routing instead of exposing every service individually.
+
+2. Why Use Ingress?
+
+Centralized routing instead of creating multiple LoadBalancers/NodePorts.
+
+Host-based and path-based routing.
+
+SSL/TLS termination at the edge.
+
+Load balancing between multiple services.
+
+Rewrite/redirect URLs.
+
+Save costs (fewer LoadBalancers needed in cloud).
+
+
+3. Ingress vs Ingress Controller
+
+Ingress: A set of rules for routing external traffic to services.
+
+Ingress Controller: The actual implementation (pod) that reads Ingress rules and configures a reverse proxy/load balancer (like NGINX, HAProxy, Traefik, Istio Gateway).
+
+
+4. Popular Ingress Controllers
+
+NGINX Ingress Controller (most widely used, supported by Kubernetes community).
+
+HAProxy Ingress.
+
+Traefik.
+
+Kong Ingress Controller.
+
+Istio Gateway (service mesh focused).
+
+
+
+
+Deploymentdemo
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  namespace: fleetman
+spec:
+  selector:
+    matchLabels:
+      mylabelsname: webapp2
+  replicas: 4 
+  template:
+    metadata:
+      name: webapp
+      labels:
+        mylabelsname: webapp2
+    spec:
+      containers:
+      - name: webapp
+        image: richardchesterwood/k8s-fleetman-webapp-angular:release0-5
+
+
+
+        
+
+# Ingress file
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: 
+  name: cbz-ingress
+  labels:
+    app: cbz-ingress
+spec:
+  ingressClassName: nginx 
+  rules:
+    - host: "cbz.com"
+      http:
+        paths: 
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service: 
+                name: home-service
+                port: 
+                  number: 80
+    - host: "mobile.cbz.com"
+      http:
+        paths: 
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service: 
+                name: mobile-service
+                port: 
+                  number: 80
+    - host: "laptop.cbz.com"
+      http:
+        paths: 
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service: 
+                name: laptop-service
+                port: 
+                  number: 80
+
+
+
+# Ingress path base Routing
+
+# #Corrected ingresssfile
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: cbz-ingress
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /$2
+# spec:
+#   ingressClassName: nginx
+#   rules:
+#     - host: a1966b12a9c4e4b44aae837ab4d48cd9-2070860083.eu-north-1.elb.amazonaws.com
+#       http:
+#         paths:
+#           - path: /mobile(/|$)(.*)
+#             pathType: ImplementationSpecific
+#             backend:
+#               service:
+#                 name: mobile-service
+#                 port:
+#                   number: 80
+#           - path: /laptop(/|$)(.*)
+#             pathType: ImplementationSpecific
+#             backend:
+#               service:
+#                 name: laptop-service
+#                 port:
+#                   number: 80
+#           - path: /(.*)
+#             pathType: ImplementationSpecific
+#             backend:
+#               service:
+#                 name: home-service
+#                 port:
+#                   number: 80
+
+
+# Ingress controller (Nginx)
+ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.1/deploy/static/provider/cloud/deploy.yaml

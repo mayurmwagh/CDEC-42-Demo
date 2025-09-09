@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  namespace: fleetman
+spec:
+  selector:
+    matchLabels:
+      mylabelsname: webapp2
+  replicas: 4 
+  template:
+    metadata:
+      name: webapp
+      labels:
+        mylabelsname: webapp2
+    spec:
+      containers:
+      - name: webapp
+        image: richardchesterwood/k8s-fleetman-webapp-angular:release0-5

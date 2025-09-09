@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-webapp
+  namespace: fleetman
+  labels:
+    mylabelsname: webapp2
+spec:
+  selector:
+    mylabelsname: webapp2 
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: LoadBalancer  
+   
