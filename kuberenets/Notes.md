@@ -786,3 +786,9 @@ spec:
 
 # Ingress controller (Nginx)
  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.1/deploy/static/provider/cloud/deploy.yaml
+
+
+
+# Edit /etc/hosts file in your laptop
+
+Ipv4 domain names
